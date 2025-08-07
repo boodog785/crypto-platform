@@ -6,6 +6,7 @@ import MyToken from './contracts/MyToken.json';
 
 function App() {
   const [account, setAccount] = useState('');
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const loadBlockchainData = async () => {
@@ -14,8 +15,12 @@ function App() {
       setAccount(accounts[0]);
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = MyToken.networks[networkId];
-      const instance = new web3.eth.Contract(MyToken.abi, deployedNetwork && deployedNetwork.address);
-      setToken(instance);
+      if (deployedNetwork) {
+        const instance = new web3.eth.Contract(MyToken.abi, deployedNetwork.address);
+        setToken(instance);
+      } else {
+        alert('Smart contract not deployed to the detected network.');
+      }
     };
 
     loadBlockchainData();
